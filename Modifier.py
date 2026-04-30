@@ -24,29 +24,21 @@ target_column_index = int(input("Select The Target Column: "))
 # Get the target column name
 target_column = columns[target_column_index - 1]
 
-# Create new columns for the desired calculations
-data['plus1'] = data[target_column] + 1
-data['plus2'] = (data[target_column] + 2) / 2
-data['met loss1'] = data[target_column] - 130
-data['met loss2'] = (data[target_column] - 129) / 2
-data['ace1'] = data[target_column] + 44
-data['ace2'] = (data[target_column] + 45) / 2
+# Create a list to store the results
+results = []
 
-# Keep only the desired columns
-desired_columns = ['plus1', 'plus2', 'met loss1', 'met loss2', 'ace1', 'ace2']
-data = data[desired_columns]
+# For each original value, create pairs (original_value, modified_value)
+for original_value in data[target_column]:
+    # Original value is stored without any modification
+    results.append(['Original', original_value, f'{original_value} + 1', original_value + 1])
+    results.append(['Original', original_value, f'({original_value} + 2) / 2', (original_value + 2) / 2])
+    results.append(['Original', original_value, f'{original_value} - 130', original_value - 130])
+    results.append(['Original', original_value, f'({original_value} - 129) / 2', (original_value - 129) / 2])
+    results.append(['Original', original_value, f'{original_value} + 44', original_value + 44])
+    results.append(['Original', original_value, f'({original_value} + 45) / 2', (original_value + 45) / 2])
 
-# Transpose the DataFrame (convert rows to columns)
-data = data.transpose()
-
-# Reset the index of the DataFrame
-data = data.reset_index()
-
-# Assemble all columns into a single column
-data = data.melt(id_vars='index', var_name='Column', value_name='Value')
-
-# Keep only 'index' and 'Value' columns
-data = data[['index', 'Value']]
+# Create DataFrame from results
+result_df = pd.DataFrame(results, columns=['Criminal/Mass Type', 'Original Mass', 'Formula', 'Calculated Value'])
 
 # Get the directory of the current script
 script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -57,13 +49,13 @@ if not output_dir:
     print("No directory selected. Exiting.")
     exit()
 
-# Construct the output file path in the same directory as the script
-# output_file_path = os.path.join(script_directory, f'{target_column}.csv')
+# Construct the output file path
+output_file_path = os.path.join(output_dir, f'{target_column}_with_original.csv')
 
 os.system("cls" if os.name == "nt" else "clear")
 
 # Save the data as a CSV file
-data.to_csv(output_file_path, index=False)
+result_df.to_csv(output_file_path, index=False)
 print(f"✅ {target_column} Calculations Saved Successfully.")
 print(f"✅ Data Saved In {output_file_path}")
 
